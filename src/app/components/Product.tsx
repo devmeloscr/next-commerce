@@ -11,8 +11,13 @@ export default function Product({ product }: ProductProps ) {
             <div className="relative max-h-72 overflow-hidden flex-1">
                 <ProductImage product={product} />
             </div>
-            <div className="flex justify-between font-bold my-3">
-                {product.title}
+            <div className="flex justify-between font-bold my-3 gap-4">
+                <div>
+                    {product.title}
+                </div>
+                <div className="text-cyan-600">
+                    {product.price}
+                </div>
             </div>
             <button className="bg-teal-600 text-white px-3.5 py-2.5 text-sm text-center rounded-md">
                 Adicionar ao carrinho

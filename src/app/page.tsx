@@ -1,12 +1,34 @@
 import { ProductType } from "@/types/ProductType";
 import Product from "./components/Product";
+import Stripe from 'stripe';
 
-async function getProducts() {
-  const response = await fetch("https://fakestoreapi.com/products");
-  if (!response.ok) {
-    throw new Error("Network response was not ok.");
-  }
-  return response.json();
+async function getProducts(): Promise<ProductType[]> {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2023-10-16",
+  })
+
+  const products = await stripe.products.list();
+  const formatedProducts = await Promise.all(
+    products.data.map(async (product) => {
+      const price = await stripe.prices.list({
+        product: product.id,
+      })
+    return {
+      id: product.id,
+      name: product.name,
+      price: price.data[0].unit_amount,
+      image: product.images[0],
+      description: product.description,
+      currency: price.data[0].currency,
+    }
+  })) 
+
+  return formatedProducts
+  // const response = await fetch("https://fakestoreapi.com/products");
+  // if (!response.ok) {
+  //   throw new Error("Network response was not ok.");
+  // }
+  // return response.json();
 }
 
 export default async function Home() {
